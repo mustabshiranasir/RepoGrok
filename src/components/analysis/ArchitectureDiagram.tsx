@@ -274,7 +274,7 @@ export default function ArchitectureDiagram({
           <DownloadBtn reactFlowId={REACT_FLOW_ID} />
         </div>
       </div>
-      <div className={`h-[320px] ${REACT_FLOW_ID}`}>
+      <div className={`h-[320px] pt-4 ${REACT_FLOW_ID}`}>
         <ReactFlowProvider>
           <Diagram analysis={analysis} />
         </ReactFlowProvider>
