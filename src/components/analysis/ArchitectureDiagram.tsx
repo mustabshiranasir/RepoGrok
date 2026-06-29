@@ -10,18 +10,26 @@ import ReactFlow, {
 import "reactflow/dist/style.css";
 import type { AnalysisResult } from "@/types/analysis";
 
+const accentColor = "var(--accent)";
+const bgSurface = "var(--bg-surface)";
+const textPrimary = "var(--text-primary)";
+const textSecondary = "var(--text-secondary)";
+const textMuted = "var(--text-muted)";
+const bgBorder = "var(--bg-border)";
+
 const nodeStyle: React.CSSProperties = {
-  background: "#111111",
-  color: "#f4f4f5",
-  border: "1px solid #6366f1",
+  background: bgSurface,
+  color: textPrimary,
+  border: `1px solid ${accentColor}`,
   borderRadius: 8,
   padding: "10px 20px",
   fontSize: 13,
   fontWeight: 600,
+  boxShadow: `0 0 0 1px ${"var(--accent-muted)"}`,
 };
 
 const edgeStyle = {
-  stroke: "#6366f1",
+  stroke: accentColor,
   strokeWidth: 1.5,
 };
 
@@ -51,7 +59,10 @@ function Diagram({ analysis }: { analysis: AnalysisResult }) {
             <div className="flex flex-col items-center gap-0.5">
               <span>{label}</span>
               {techs && (
-                <span className="text-[11px] text-[#a1a1aa] font-normal">
+                <span
+                  className="text-[11px] font-normal"
+                  style={{ color: textSecondary }}
+                >
                   {techs}
                 </span>
               )}
@@ -82,74 +93,54 @@ function Diagram({ analysis }: { analysis: AnalysisResult }) {
       .map((t) => t.name)
       .join(", ");
 
+    const count = [categories.has("frontend"), categories.has("backend"), categories.has("database"), categories.has("devops")].filter(Boolean).length;
+    const startY = (count * gap - gap) / -2;
+    y = startY;
+
     addLayer("frontend", "Frontend", frontendTechs, categories.has("frontend"));
     addLayer("backend", "Backend", backendTechs, categories.has("backend"));
     addLayer("database", "Database", dbTechs, categories.has("database"));
     addLayer("devops", "DevOps / Infra", devOpsTechs, categories.has("devops"));
 
-    if (categories.has("frontend") && categories.has("backend")) {
+    const addEdge = (
+      id: string,
+      source: string,
+      target: string,
+      label: string
+    ) => {
       result.edges.push({
-        id: "fe-be",
-        source: "frontend",
-        target: "backend",
+        id,
+        source,
+        target,
         animated: true,
         style: edgeStyle,
-        markerEnd: { type: MarkerType.ArrowClosed, color: "#6366f1" },
-        label: "HTTP / API calls",
-        labelStyle: { fill: "#a1a1aa", fontSize: 11 },
+        markerEnd: { type: MarkerType.ArrowClosed, color: accentColor },
+        label,
+        labelStyle: { fill: textMuted, fontSize: 11 },
+        labelBgStyle: { fill: bgSurface, opacity: 0.85 },
+        labelBgPadding: [6, 4] as [number, number],
+        labelBgBorderRadius: 4,
       });
+    };
+
+    if (categories.has("frontend") && categories.has("backend")) {
+      addEdge("fe-be", "frontend", "backend", "HTTP / API");
     }
 
     if (categories.has("backend") && categories.has("database")) {
-      result.edges.push({
-        id: "be-db",
-        source: "backend",
-        target: "database",
-        animated: true,
-        style: edgeStyle,
-        markerEnd: { type: MarkerType.ArrowClosed, color: "#6366f1" },
-        label: "Queries",
-        labelStyle: { fill: "#a1a1aa", fontSize: 11 },
-      });
+      addEdge("be-db", "backend", "database", "Queries");
     }
 
     if (categories.has("frontend") && categories.has("database") && !categories.has("backend")) {
-      result.edges.push({
-        id: "fe-db",
-        source: "frontend",
-        target: "database",
-        animated: true,
-        style: edgeStyle,
-        markerEnd: { type: MarkerType.ArrowClosed, color: "#6366f1" },
-        label: "Direct queries",
-        labelStyle: { fill: "#a1a1aa", fontSize: 11 },
-      });
+      addEdge("fe-db", "frontend", "database", "Direct queries");
     }
 
     if (categories.has("devops")) {
       if (categories.has("backend")) {
-        result.edges.push({
-          id: "devops-be",
-          source: "devops",
-          target: "backend",
-          animated: true,
-          style: edgeStyle,
-          markerEnd: { type: MarkerType.ArrowClosed, color: "#6366f1" },
-          label: "Deploys",
-          labelStyle: { fill: "#a1a1aa", fontSize: 11 },
-        });
+        addEdge("devops-be", "devops", "backend", "Deploys");
       }
       if (categories.has("database")) {
-        result.edges.push({
-          id: "devops-db",
-          source: "devops",
-          target: "database",
-          animated: true,
-          style: edgeStyle,
-          markerEnd: { type: MarkerType.ArrowClosed, color: "#6366f1" },
-          label: "Manages",
-          labelStyle: { fill: "#a1a1aa", fontSize: 11 },
-        });
+        addEdge("devops-db", "devops", "database", "Manages");
       }
     }
 
@@ -161,9 +152,11 @@ function Diagram({ analysis }: { analysis: AnalysisResult }) {
   }, [nodes, fitView]);
 
   return (
-    <ReactFlow
+      <ReactFlow
       nodes={nodes}
       edges={edges}
+      fitView
+      fitViewOptions={{ padding: 0.4 }}
       nodesDraggable={false}
       nodesConnectable={false}
       elementsSelectable={false}
@@ -172,8 +165,9 @@ function Diagram({ analysis }: { analysis: AnalysisResult }) {
       zoomOnPinch={false}
       zoomOnDoubleClick={false}
       proOptions={{ hideAttribution: true }}
+      style={{ background: "transparent" }}
     >
-      <Background color="#1e1e1e" gap={20} size={1} />
+      <Background color={bgBorder} gap={20} size={1} />
     </ReactFlow>
   );
 }
