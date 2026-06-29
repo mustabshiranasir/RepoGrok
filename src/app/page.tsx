@@ -32,7 +32,7 @@ export default function Home() {
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           Understand any GitHub repo{" "}
-          <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-[#39AEA9] to-[#2d9490] bg-clip-text text-transparent">
             in 60 seconds
           </span>
         </motion.h1>
@@ -52,7 +52,7 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <div className="relative flex items-center w-full bg-[#111111] border border-[#1e1e1e] rounded-lg focus-within:border-indigo-500/50 focus-within:ring-1 focus-within:ring-indigo-500/20 transition-all">
+          <div className="relative flex items-center w-full bg-[#111111] border border-[#1e1e1e] rounded-lg focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/20 transition-all">
             <input
               type="text"
               value={url}
@@ -60,7 +60,7 @@ export default function Home() {
               placeholder="https://github.com/owner/repo"
               className="flex-1 bg-transparent px-4 py-3.5 text-[#f4f4f5] placeholder-[#71717a] text-sm outline-none"
             />
-            <button className="flex items-center gap-1.5 mr-1.5 px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] text-[#e4e4e7] text-sm font-medium rounded-md hover:bg-[#222222] hover:border-indigo-500/30 hover:text-[#f4f4f5] transition-all whitespace-nowrap">
+            <button className="flex items-center gap-1.5 mr-1.5 px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] text-[#e4e4e7] text-sm font-medium rounded-md hover:bg-[#222222] hover:border-accent/30 hover:text-[#f4f4f5] transition-all whitespace-nowrap">
               Analyze
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
@@ -78,7 +78,7 @@ export default function Home() {
             <button
               key={ex.label}
               onClick={() => fillInput(ex.label)}
-              className="text-xs px-2.5 py-1 rounded-md bg-[#111111] border border-[#1e1e1e] text-[#a1a1aa] hover:text-[#f4f4f5] hover:border-indigo-500/30 transition-colors"
+              className="text-xs px-2.5 py-1 rounded-md bg-[#111111] border border-[#1e1e1e] text-[#a1a1aa] hover:text-[#f4f4f5] hover:border-accent/30 transition-colors"
             >
               {ex.label}
             </button>
