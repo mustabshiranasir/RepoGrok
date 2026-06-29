@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 const EXAMPLES = [
   { label: "vercel/next.js" },
@@ -12,9 +13,16 @@ const EXAMPLES = [
 
 export default function Home() {
   const [url, setUrl] = useState("");
+  const router = useRouter();
 
   const fillInput = (value: string) => {
     setUrl(`https://github.com/${value}`);
+  };
+
+  const handleAnalyze = () => {
+    if (url.trim()) {
+      router.push(`/analyze?url=${encodeURIComponent(url.trim())}`);
+    }
   };
 
   return (
@@ -57,10 +65,14 @@ export default function Home() {
               type="text"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleAnalyze()}
               placeholder="https://github.com/owner/repo"
               className="flex-1 bg-transparent px-4 py-3.5 text-[#f4f4f5] placeholder-[#71717a] text-sm outline-none"
             />
-            <button className="flex items-center gap-1.5 mr-1.5 px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] text-[#e4e4e7] text-sm font-medium rounded-md hover:bg-[#222222] hover:border-accent/30 hover:text-[#f4f4f5] transition-all whitespace-nowrap">
+            <button
+              onClick={handleAnalyze}
+              className="flex items-center gap-1.5 mr-1.5 px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] text-[#e4e4e7] text-sm font-medium rounded-md hover:bg-[#222222] hover:border-accent/30 hover:text-[#f4f4f5] transition-all whitespace-nowrap"
+            >
               Analyze
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
