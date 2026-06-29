@@ -2,21 +2,22 @@
 
 import type { RatingItem } from "@/types/analysis";
 
+const maroon = "#b84d4d";
+const maroonDark = "#8a3030";
+const maroonLight = "#d47a7a";
+
 const categoryColors: Record<string, string> = {
-  "Code Quality": "var(--accent)",
-  Architecture: "var(--accent)",
-  Performance: "#eab308",
-  "Error Handling": "#f97316",
-  Documentation: "#3b82f6",
-  Testing: "#8b5cf6",
-  Security: "#ef4444",
+  "Code Quality": maroon,
+  Architecture: maroonLight,
+  Performance: maroon,
+  "Error Handling": maroonDark,
+  Documentation: maroonLight,
+  Testing: maroon,
+  Security: maroonDark,
 };
 
-function getScoreColor(score: number, max: number): string {
-  const pct = score / max;
-  if (pct >= 0.8) return "var(--accent)";
-  if (pct >= 0.5) return "#eab308";
-  return "#ef4444";
+function getScoreColor(_score: number, _max: number): string {
+  return maroon;
 }
 
 export default function RatingCard({ ratings }: { ratings: RatingItem[] }) {
@@ -33,7 +34,7 @@ export default function RatingCard({ ratings }: { ratings: RatingItem[] }) {
         </h2>
         <span
           className="text-lg font-bold font-mono"
-          style={{ color: getScoreColor(overall, 10) }}
+          style={{ color: maroon }}
         >
           {overall.toFixed(1)}
           <span className="text-[11px] text-[var(--text-muted)] font-normal">
@@ -44,7 +45,7 @@ export default function RatingCard({ ratings }: { ratings: RatingItem[] }) {
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
         {ratings.map((r) => {
           const pct = (r.score / r.maxScore) * 100;
-          const color = categoryColors[r.category] ?? "var(--accent)";
+          const color = categoryColors[r.category] ?? maroon;
 
           return (
             <div key={r.category} className="space-y-1">
@@ -54,7 +55,7 @@ export default function RatingCard({ ratings }: { ratings: RatingItem[] }) {
                 </span>
                 <span
                   className="font-mono font-semibold"
-                  style={{ color: getScoreColor(r.score, r.maxScore) }}
+                  style={{ color: maroon }}
                 >
                   {r.score}/{r.maxScore}
                 </span>
