@@ -1,12 +1,12 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 import type { AnalysisResult, RepoDataInput } from "@/types/analysis";
 
-function getClient(): GoogleGenerativeAI {
-  const key = process.env.GEMINI_API_KEY;
+function getClient(): Groq {
+  const key = process.env.GROQ_API_KEY;
   if (!key) {
-    throw new Error("GEMINI_API_KEY is not configured");
+    throw new Error("GROQ_API_KEY is not configured");
   }
-  return new GoogleGenerativeAI(key);
+  return new Groq({ apiKey: key });
 }
 
 function buildPrompt(data: RepoDataInput): string {
@@ -57,26 +57,22 @@ Be specific and accurate. Use the actual file contents to inform your analysis.`
 
 export async function analyzeRepo(data: RepoDataInput): Promise<AnalysisResult> {
   const client = getClient();
-  const model = client.getGenerativeModel({ model: "gemini-2.0-flash" });
-
   const prompt = buildPrompt(data);
 
-  const result = await model.generateContent({
-    contents: [{ role: "user", parts: [{ text: prompt }] }],
-    generationConfig: {
-      temperature: 0.3,
-    },
+  const response = await client.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.3,
+    response_format: { type: "json_object" },
   });
 
-  const content = result.response.text();
+  const content = response.choices[0]?.message?.content;
   if (!content) {
     throw new Error("Empty response from AI");
   }
 
-  const cleaned = content.replace(/```(?:json)?\s*/gi, "").replace(/```/g, "").trim();
-
   try {
-    const parsed = JSON.parse(cleaned) as AnalysisResult;
+    const parsed = JSON.parse(content) as AnalysisResult;
     validateResult(parsed);
     return parsed;
   } catch (err) {
