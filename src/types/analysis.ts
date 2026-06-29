@@ -15,6 +15,13 @@ export interface EntryPoint {
   explanation: string;
 }
 
+export interface RatingItem {
+  category: string;
+  score: number;
+  maxScore: number;
+  reason: string;
+}
+
 export interface AnalysisResult {
   summary: string;
   purpose: string;
@@ -24,6 +31,7 @@ export interface AnalysisResult {
   dataFlow: string;
   setupSteps: string[];
   highlights: string[];
+  ratings: RatingItem[];
 }
 
 export interface RepoDataInput {

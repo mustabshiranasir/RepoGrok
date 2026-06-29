@@ -8,6 +8,7 @@ import SummaryCard from "@/components/analysis/SummaryCard";
 import FolderTree from "@/components/analysis/FolderTree";
 import SetupGuide from "@/components/analysis/SetupGuide";
 import ArchitectureDiagram from "@/components/analysis/ArchitectureDiagram";
+import RatingCard from "@/components/analysis/RatingCard";
 import type { AnalysisResult } from "@/types/analysis";
 
 function SkeletonBlock({ className }: { className?: string }) {
@@ -153,9 +154,15 @@ function AnalyzeContent() {
             </div>
           )}
 
-          <div>
-            <SectionLabel label="Architecture" />
-            <ArchitectureDiagram analysis={analysis} />
+          <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+            <div>
+              <SectionLabel label="Architecture" />
+              <ArchitectureDiagram analysis={analysis} />
+            </div>
+            <div>
+              <SectionLabel label="Ratings" />
+              <RatingCard ratings={analysis.ratings} />
+            </div>
           </div>
         </div>
       )}

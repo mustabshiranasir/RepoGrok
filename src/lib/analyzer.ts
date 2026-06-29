@@ -47,12 +47,16 @@ Respond with this exact JSON structure (no trailing commas):
   "entryPoint": { "file": "path/to/entry", "explanation": "why this is the entry point" },
   "dataFlow": "explain how data moves through the application",
   "setupSteps": ["step 1", "step 2", "..."],
-  "highlights": ["3-5 notable things about this codebase"]
+  "highlights": ["3-5 notable things about this codebase"],
+  "ratings": [
+    { "category": "Code Quality", "score": 7, "maxScore": 10, "reason": "brief justification based on what you see in the code" }
+  ]
 }
 
 For "icon" in techStack, use lowercase simple identifiers like "react", "nextjs", "tailwind", "nodejs", "python", "typescript", "postgresql", "docker", etc.
 For "folders", include only the top-level directories that contain source code (e.g. src/, app/, components/, lib/, etc.). Skip config folders, node_modules, build output.
 For "setupSteps", provide 6-10 concrete setup steps based ONLY on what you see in the actual file contents above. Each step must include the exact terminal command or precise action. Extract commands from package.json scripts (npm run dev, npx prisma, etc.), env variables from .env.example, and database setup from schema/config files. Example good step: "Copy .env.example to .env and fill in DATABASE_URL and GROQ_API_KEY values". Example bad step: "Set up environment variables". Be specific.
+For "ratings", rate the project 1-10 across these categories (include all): "Code Quality", "Architecture", "Performance", "Error Handling", "Documentation", "Testing", "Security". Score based on what you observe in the actual file contents. Include a brief reason for each score. Be critical and honest — not every project deserves 10/10.
 Be specific and accurate. Use the actual file contents to inform your analysis.`;
 }
 
@@ -93,4 +97,5 @@ function validateResult(result: unknown): asserts result is AnalysisResult {
   if (typeof r.dataFlow !== "string") throw new Error("Missing or invalid 'dataFlow'");
   if (!Array.isArray(r.setupSteps)) throw new Error("Missing or invalid 'setupSteps'");
   if (!Array.isArray(r.highlights)) throw new Error("Missing or invalid 'highlights'");
+  if (!Array.isArray(r.ratings)) r.ratings = [];
 }

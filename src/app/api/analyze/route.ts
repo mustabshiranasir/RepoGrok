@@ -37,6 +37,7 @@ function reconstructAnalysis(record: {
     entryPoint?: { file: string; explanation: string };
     dataFlow?: string;
     highlights?: string[];
+    ratings?: AnalysisResult["ratings"];
   } | null;
 
   return {
@@ -49,6 +50,7 @@ function reconstructAnalysis(record: {
       dataFlow: arch?.dataFlow ?? "",
       setupSteps: (record.setupSteps as string[]) ?? [],
       highlights: arch?.highlights ?? [],
+      ratings: arch?.ratings ?? [],
     },
     rawFileTree: record.rawFileTree as { path: string; type: string }[],
   };
@@ -153,6 +155,7 @@ export async function POST(request: Request) {
             entryPoint: analysis.entryPoint,
             dataFlow: analysis.dataFlow,
             highlights: analysis.highlights,
+            ratings: analysis.ratings,
           })
         ),
         setupSteps: JSON.parse(JSON.stringify(analysis.setupSteps)),
@@ -172,6 +175,7 @@ export async function POST(request: Request) {
             entryPoint: analysis.entryPoint,
             dataFlow: analysis.dataFlow,
             highlights: analysis.highlights,
+            ratings: analysis.ratings,
           })
         ),
         setupSteps: JSON.parse(JSON.stringify(analysis.setupSteps)),
