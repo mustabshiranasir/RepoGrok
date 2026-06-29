@@ -1,12 +1,12 @@
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { AnalysisResult, RepoDataInput } from "@/types/analysis";
 
-function getClient(): OpenAI {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key || key === "your_openai_or_claude_api_key") {
-    throw new Error("OPENAI_API_KEY is not configured");
+function getClient(): GoogleGenerativeAI {
+  const key = process.env.GEMINI_API_KEY;
+  if (!key) {
+    throw new Error("GEMINI_API_KEY is not configured");
   }
-  return new OpenAI({ apiKey: key });
+  return new GoogleGenerativeAI(key);
 }
 
 function buildPrompt(data: RepoDataInput): string {
@@ -20,7 +20,7 @@ function buildPrompt(data: RepoDataInput): string {
     .map(([name, content]) => `--- ${name} ---\n${content}`)
     .join("\n\n");
 
-  return `You are analyzing a GitHub repository. Given the data below, return ONLY valid JSON with no markdown, no code fences, no extra text.
+  return `You are analyzing a GitHub repository. Return ONLY valid JSON with no markdown, no code fences, no extra text.
 
 Repository: ${data.metadata.fullName}
 Description: ${data.metadata.description ?? "N/A"}
@@ -57,22 +57,26 @@ Be specific and accurate. Use the actual file contents to inform your analysis.`
 
 export async function analyzeRepo(data: RepoDataInput): Promise<AnalysisResult> {
   const client = getClient();
+  const model = client.getGenerativeModel({ model: "gemini-2.0-flash" });
+
   const prompt = buildPrompt(data);
 
-  const response = await client.chat.completions.create({
-    model: "gpt-4o",
-    messages: [{ role: "user", content: prompt }],
-    temperature: 0.3,
-    response_format: { type: "json_object" },
+  const result = await model.generateContent({
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+    generationConfig: {
+      temperature: 0.3,
+    },
   });
 
-  const content = response.choices[0]?.message?.content;
+  const content = result.response.text();
   if (!content) {
     throw new Error("Empty response from AI");
   }
 
+  const cleaned = content.replace(/```(?:json)?\s*/gi, "").replace(/```/g, "").trim();
+
   try {
-    const parsed = JSON.parse(content) as AnalysisResult;
+    const parsed = JSON.parse(cleaned) as AnalysisResult;
     validateResult(parsed);
     return parsed;
   } catch (err) {
