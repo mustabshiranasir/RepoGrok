@@ -154,15 +154,14 @@ function AnalyzeContent() {
             </div>
           )}
 
-          <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-            <div>
-              <SectionLabel label="Architecture" />
-              <ArchitectureDiagram analysis={analysis} />
-            </div>
-            <div>
-              <SectionLabel label="Ratings" />
-              <RatingCard ratings={analysis.ratings} />
-            </div>
+          <div>
+            <SectionLabel label="Ratings" />
+            <RatingCard ratings={analysis.ratings} />
+          </div>
+
+          <div>
+            <SectionLabel label="Architecture" />
+            <ArchitectureDiagram analysis={analysis} />
           </div>
         </div>
       )}

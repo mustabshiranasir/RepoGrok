@@ -11,6 +11,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "RepoGrok — Understand any GitHub repo in seconds",
   description: "Paste a GitHub URL and get an instant AI-powered analysis — file tree, architecture, tech stack, and setup guide.",
+  icons: { icon: "/favicon.svg" },
 };
 
 export default function RootLayout({
