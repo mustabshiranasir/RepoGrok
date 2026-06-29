@@ -71,7 +71,7 @@ export default function Home() {
             />
             <button
               onClick={handleAnalyze}
-              className="flex items-center gap-1.5 mr-1.5 px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] text-[#e4e4e7] text-sm font-medium rounded-md hover:bg-[#222222] hover:border-accent/30 hover:text-[#f4f4f5] active:bg-accent active:text-white active:border-accent transition-all whitespace-nowrap"
+              className="flex items-center gap-1.5 mr-1.5 px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] text-[#e4e4e7] text-sm font-medium rounded-md hover:bg-accent hover:text-white hover:border-accent active:bg-accent/80 active:text-white active:border-accent transition-all whitespace-nowrap"
             >
               Analyze
               <ArrowRight className="w-3.5 h-3.5" />
