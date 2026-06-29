@@ -184,7 +184,7 @@ export default function ArchitectureDiagram({
           Architecture
         </h2>
       </div>
-      <div className="h-[320px]">
+      <div className="h-[420px]">
         <ReactFlowProvider>
           <Diagram analysis={analysis} />
         </ReactFlowProvider>
