@@ -1,0 +1,125 @@
+import Groq from "groq-sdk";
+import type { AnalysisResult, RepoDataInput } from "@/types/analysis";
+
+function getClient(): Groq {
+  const key = process.env.GROQ_API_KEY;
+  if (!key) {
+    throw new Error("GROQ_API_KEY is not configured");
+  }
+  return new Groq({ apiKey: key });
+}
+
+const MAX_TREE_LINES = 300;
+
+function buildPrompt(data: RepoDataInput): string {
+  let treeLines = data.fileTree
+    .filter((f) => f.type === "blob")
+    .map((f) => f.path);
+
+  if (treeLines.length > MAX_TREE_LINES) {
+    treeLines = treeLines.slice(0, MAX_TREE_LINES);
+    treeLines.push(`... and ${data.fileTree.filter(f => f.type === "blob").length - MAX_TREE_LINES} more files`);
+  }
+
+  const treeSummary = treeLines.join("\n");
+
+  const fileContents = Object.entries(data.files)
+    .filter(([_, content]) => content !== null)
+    .map(([name, content]) => `--- ${name} ---\n${content}`)
+    .join("\n\n");
+
+  return `You are analyzing a GitHub repository. Return ONLY valid JSON with no markdown, no code fences, no extra text.
+
+Repository: ${data.metadata.fullName}
+Description: ${data.metadata.description ?? "N/A"}
+Language: ${data.metadata.language ?? "N/A"}
+Topics: ${data.metadata.topics.join(", ") || "N/A"}
+Stars: ${data.metadata.stars}
+
+File tree:
+${treeSummary || "(empty)"}
+
+Key file contents:
+${fileContents || "(none)"}
+
+Respond with this exact JSON structure (no trailing commas):
+{
+  "summary": "a thorough 8-12 sentence overview covering: what the project does, its key features and functionality, architecture style, tech stack rationale, target audience, project structure, and any notable patterns or trade-offs",
+  "purpose": "one-line purpose statement",
+  "techStack": [
+    { "name": "Technology name", "category": "frontend|backend|database|devops|testing", "icon": "simple-icon-identifier" }
+  ],
+  "folders": [
+    { "name": "folder name", "path": "relative/path", "explanation": "what this folder contains and its role" }
+  ],
+  "entryPoint": { "file": "path/to/entry", "explanation": "why this is the entry point" },
+  "dataFlow": "explain how data moves through the application",
+  "setupSteps": ["step 1", "step 2", "..."],
+  "highlights": ["3-5 notable things about this codebase"],
+  "ratings": [
+    { "category": "Code Quality", "score": 7, "maxScore": 10, "reason": "brief justification" },
+    { "category": "Architecture", "score": 6, "maxScore": 10, "reason": "brief justification" },
+    { "category": "Performance", "score": 5, "maxScore": 10, "reason": "brief justification" },
+    { "category": "Error Handling", "score": 4, "maxScore": 10, "reason": "brief justification" },
+    { "category": "Documentation", "score": 8, "maxScore": 10, "reason": "brief justification" },
+    { "category": "Testing", "score": 3, "maxScore": 10, "reason": "brief justification" },
+    { "category": "Security", "score": 6, "maxScore": 10, "reason": "brief justification" }
+  ]
+}
+
+For "icon" in techStack, use lowercase simple identifiers like "react", "nextjs", "tailwind", "nodejs", "python", "typescript", "postgresql", "docker", etc.
+For "folders", include only the top-level directories that contain source code (e.g. src/, app/, components/, lib/, etc.). Skip config folders, node_modules, build output.
+For "setupSteps", provide 6-10 concrete setup steps based ONLY on what you see in the actual file contents above. Each step must include the exact terminal command or precise action. Extract commands from package.json scripts (npm run dev, npx prisma, etc.), env variables from .env.example, and database setup from schema/config files. Example good step: "Copy .env.example to .env and fill in DATABASE_URL and GROQ_API_KEY values". Example bad step: "Set up environment variables". Be specific.
+For "ratings", include ALL 7 categories exactly as shown in the template above (Code Quality, Architecture, Performance, Error Handling, Documentation, Testing, Security). Score each 1-10 based on what you observe in the actual file contents. Include a brief reason for each score. Be critical and honest — not every project deserves 10/10.
+Be specific and accurate. Use the actual file contents to inform your analysis.`;
+}
+
+export async function analyzeRepo(data: RepoDataInput): Promise<AnalysisResult> {
+  const client = getClient();
+  const prompt = buildPrompt(data);
+
+  const response = await client.chat.completions.create({
+    model: "llama-3.3-70b-versatile",
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.3,
+    response_format: { type: "json_object" },
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error("Empty response from AI");
+  }
+
+  try {
+    const parsed = JSON.parse(content) as AnalysisResult;
+    validateResult(parsed);
+    return parsed;
+  } catch (err) {
+    throw new Error(
+      `Failed to parse AI response: ${err instanceof Error ? err.message : "unknown error"}`
+    );
+  }
+}
+
+function validateResult(result: unknown): asserts result is AnalysisResult {
+  const r = result as Record<string, unknown>;
+  if (typeof r.summary !== "string") throw new Error("Missing or invalid 'summary'");
+  if (typeof r.purpose !== "string") throw new Error("Missing or invalid 'purpose'");
+  if (!Array.isArray(r.techStack)) throw new Error("Missing or invalid 'techStack'");
+  if (!Array.isArray(r.folders)) throw new Error("Missing or invalid 'folders'");
+  if (!r.entryPoint || typeof r.entryPoint !== "object") throw new Error("Missing or invalid 'entryPoint'");
+  if (typeof r.dataFlow !== "string") throw new Error("Missing or invalid 'dataFlow'");
+  if (!Array.isArray(r.setupSteps)) throw new Error("Missing or invalid 'setupSteps'");
+  if (!Array.isArray(r.highlights)) throw new Error("Missing or invalid 'highlights'");
+  if (!Array.isArray(r.ratings) || r.ratings.length === 0) {
+    r.ratings = [
+      { category: "Code Quality", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+      { category: "Architecture", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+      { category: "Performance", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+      { category: "Error Handling", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+      { category: "Documentation", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+      { category: "Testing", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+      { category: "Security", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+    ];
+  }
+}
