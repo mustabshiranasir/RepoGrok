@@ -1,6 +1,6 @@
 # RepoGrok
 
-Paste any GitHub repository URL and get an instant AI-powered breakdown — code summary, tech stack, folder structure, architecture diagram, setup guide, and project ratings.
+Paste any GitHub repository URL and get an instant AI-powered breakdown — code summary, tech stack, folder structure, architecture diagram, setup guide, and project ratings. Designed for developers to inspect any repo in seconds without cloning it.
 
 Built with Next.js, Groq AI, and Supabase.
 
