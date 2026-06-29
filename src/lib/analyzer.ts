@@ -52,6 +52,7 @@ Respond with this exact JSON structure (no trailing commas):
 
 For "icon" in techStack, use lowercase simple identifiers like "react", "nextjs", "tailwind", "nodejs", "python", "typescript", "postgresql", "docker", etc.
 For "folders", include only the top-level directories that contain source code (e.g. src/, app/, components/, lib/, etc.). Skip config folders, node_modules, build output.
+For "setupSteps", provide 6-10 concrete setup steps based ONLY on what you see in the actual file contents above. Each step must include the exact terminal command or precise action. Extract commands from package.json scripts (npm run dev, npx prisma, etc.), env variables from .env.example, and database setup from schema/config files. Example good step: "Copy .env.example to .env and fill in DATABASE_URL and GROQ_API_KEY values". Example bad step: "Set up environment variables". Be specific.
 Be specific and accurate. Use the actual file contents to inform your analysis.`;
 }
 
