@@ -44,13 +44,13 @@ export default function SetupGuide({ steps }: { steps: string[] }) {
   if (!steps.length) return null;
 
   return (
-    <div className="bg-[var(--bg-surface)] border border-[var(--bg-border)] rounded-xl flex flex-col h-full">
-      <div className="px-5 py-3 border-b border-[var(--bg-border)] shrink-0">
+    <div className="bg-[var(--bg-surface)] border border-[var(--bg-border)] rounded-xl">
+      <div className="px-5 py-3 border-b border-[var(--bg-border)]">
         <h2 className="text-sm font-semibold text-[var(--text-primary)]">
           Setup Guide
         </h2>
       </div>
-      <div className="px-5 py-5 flex-1 overflow-y-auto min-h-0">
+      <div className="px-5 py-5">
         <div className="relative">
           {steps.map((step, i) => (
             <motion.div
