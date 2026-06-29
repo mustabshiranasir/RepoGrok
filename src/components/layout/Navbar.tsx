@@ -1,11 +1,12 @@
-import { Code2 } from "lucide-react";
 import Link from "next/link";
 
 export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-[60px] bg-[#0a0a0a] border-b border-[#1e1e1e] flex items-center px-6">
       <div className="flex items-center gap-2.5">
-        <Code2 className="w-5 h-5 text-indigo-500" />
+        <span className="text-indigo-400 font-mono text-sm leading-none tracking-tight pr-1.5 border-r border-[#1e1e1e] mr-1.5">
+          &lt;/&gt;
+        </span>
         <span className="text-[#f4f4f5] text-lg font-semibold tracking-tight">
           RepoGrok
         </span>
