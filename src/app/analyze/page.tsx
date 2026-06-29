@@ -34,6 +34,7 @@ function AnalyzeContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [rawFileTree, setRawFileTree] = useState<{ path: string; type: string }[] | null>(null);
   const [repoName, setRepoName] = useState("");
 
   useEffect(() => {
@@ -60,6 +61,7 @@ function AnalyzeContent() {
       })
       .then((data) => {
         setAnalysis(data.analysis);
+        setRawFileTree(data.rawFileTree ?? null);
         setLoading(false);
       })
       .catch((err) => {
@@ -139,7 +141,7 @@ function AnalyzeContent() {
               {analysis.folders.length > 0 && (
                 <div>
                   <SectionLabel label="Folder Structure" />
-                  <FolderTree folders={analysis.folders} />
+                  <FolderTree folders={analysis.folders} tree={rawFileTree ?? []} />
                 </div>
               )}
               {analysis.setupSteps.length > 0 && (

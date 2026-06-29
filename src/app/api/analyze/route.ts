@@ -30,7 +30,8 @@ function reconstructAnalysis(record: {
   folderTree: unknown;
   architecture: unknown;
   setupSteps: unknown;
-}): AnalysisResult {
+  rawFileTree: unknown;
+}) {
   const arch = record.architecture as {
     purpose?: string;
     entryPoint?: { file: string; explanation: string };
@@ -39,14 +40,17 @@ function reconstructAnalysis(record: {
   } | null;
 
   return {
-    summary: record.summary,
-    purpose: arch?.purpose ?? "",
-    techStack: (record.techStack as AnalysisResult["techStack"]) ?? [],
-    folders: (record.folderTree as AnalysisResult["folders"]) ?? [],
-    entryPoint: arch?.entryPoint ?? { file: "", explanation: "" },
-    dataFlow: arch?.dataFlow ?? "",
-    setupSteps: (record.setupSteps as string[]) ?? [],
-    highlights: arch?.highlights ?? [],
+    analysis: {
+      summary: record.summary,
+      purpose: arch?.purpose ?? "",
+      techStack: (record.techStack as AnalysisResult["techStack"]) ?? [],
+      folders: (record.folderTree as AnalysisResult["folders"]) ?? [],
+      entryPoint: arch?.entryPoint ?? { file: "", explanation: "" },
+      dataFlow: arch?.dataFlow ?? "",
+      setupSteps: (record.setupSteps as string[]) ?? [],
+      highlights: arch?.highlights ?? [],
+    },
+    rawFileTree: record.rawFileTree as { path: string; type: string }[],
   };
 }
 
@@ -109,7 +113,7 @@ export async function POST(request: Request) {
       if (isFresh && shaMatch) {
         return NextResponse.json({
           cached: true,
-          analysis: reconstructAnalysis(existing),
+          ...reconstructAnalysis(existing),
         });
       }
     }
@@ -178,7 +182,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       cached: false,
-      analysis: reconstructAnalysis(updated),
+      ...reconstructAnalysis(updated),
     });
   } catch (err: unknown) {
     const message =
