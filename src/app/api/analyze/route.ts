@@ -50,7 +50,7 @@ function reconstructAnalysis(record: {
       dataFlow: arch?.dataFlow ?? "",
       setupSteps: (record.setupSteps as string[]) ?? [],
       highlights: arch?.highlights ?? [],
-      ratings: arch?.ratings ?? [],
+      ratings: arch?.ratings?.length ? arch.ratings : defaultRatings(),
     },
     rawFileTree: record.rawFileTree as { path: string; type: string }[],
   };
@@ -194,4 +194,16 @@ export async function POST(request: Request) {
     console.error("Analyze route error:", err);
     return NextResponse.json({ error: message }, { status: 500 });
   }
+}
+
+function defaultRatings() {
+  return [
+    { category: "Code Quality", score: 0, maxScore: 10, reason: "Cached analysis — re-run to get ratings" },
+    { category: "Architecture", score: 0, maxScore: 10, reason: "Cached analysis — re-run to get ratings" },
+    { category: "Performance", score: 0, maxScore: 10, reason: "Cached analysis — re-run to get ratings" },
+    { category: "Error Handling", score: 0, maxScore: 10, reason: "Cached analysis — re-run to get ratings" },
+    { category: "Documentation", score: 0, maxScore: 10, reason: "Cached analysis — re-run to get ratings" },
+    { category: "Testing", score: 0, maxScore: 10, reason: "Cached analysis — re-run to get ratings" },
+    { category: "Security", score: 0, maxScore: 10, reason: "Cached analysis — re-run to get ratings" },
+  ];
 }

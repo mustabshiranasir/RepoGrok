@@ -97,5 +97,15 @@ function validateResult(result: unknown): asserts result is AnalysisResult {
   if (typeof r.dataFlow !== "string") throw new Error("Missing or invalid 'dataFlow'");
   if (!Array.isArray(r.setupSteps)) throw new Error("Missing or invalid 'setupSteps'");
   if (!Array.isArray(r.highlights)) throw new Error("Missing or invalid 'highlights'");
-  if (!Array.isArray(r.ratings)) r.ratings = [];
+  if (!Array.isArray(r.ratings) || r.ratings.length === 0) {
+    r.ratings = [
+      { category: "Code Quality", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+      { category: "Architecture", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+      { category: "Performance", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+      { category: "Error Handling", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+      { category: "Documentation", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+      { category: "Testing", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+      { category: "Security", score: 0, maxScore: 10, reason: "Insufficient data to evaluate" },
+    ];
+  }
 }
