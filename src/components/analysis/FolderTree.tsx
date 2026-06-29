@@ -210,8 +210,8 @@ export default function FolderTree({
   }
 
   return (
-    <div className="bg-[var(--bg-surface)] border border-[var(--bg-border)] rounded-xl overflow-hidden">
-      <div className="px-5 py-3 border-b border-[var(--bg-border)] flex items-center justify-between">
+    <div className="bg-[var(--bg-surface)] border border-[var(--bg-border)] rounded-xl overflow-hidden flex flex-col h-full">
+      <div className="px-5 py-3 border-b border-[var(--bg-border)] flex items-center justify-between shrink-0">
         <h2 className="text-sm font-semibold text-[var(--text-primary)]">
           Folder Structure
         </h2>
@@ -219,7 +219,7 @@ export default function FolderTree({
           {treeData.reduce((sum, n) => sum + 1 + countItems(n), 0)} items
         </span>
       </div>
-      <div className="py-1 max-h-[420px] overflow-y-auto">
+      <div className="py-1 flex-1 overflow-y-auto min-h-0">
         {treeData.map((node) => (
           <TreeRow
             key={node.path}

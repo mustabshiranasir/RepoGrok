@@ -140,15 +140,19 @@ function AnalyzeContent() {
           {(analysis.folders.length > 0 || analysis.setupSteps.length > 0) && (
             <div className={`grid gap-6 ${analysis.folders.length > 0 && analysis.setupSteps.length > 0 ? "grid-cols-1 lg:grid-cols-2" : "grid-cols-1"}`}>
               {analysis.folders.length > 0 && (
-                <div>
+                <div className="h-full flex flex-col">
                   <SectionLabel label="Folder Structure" />
-                  <FolderTree folders={analysis.folders} tree={rawFileTree ?? []} />
+                  <div className="flex-1 min-h-0">
+                    <FolderTree folders={analysis.folders} tree={rawFileTree ?? []} />
+                  </div>
                 </div>
               )}
               {analysis.setupSteps.length > 0 && (
-                <div>
+                <div className="h-full flex flex-col">
                   <SectionLabel label="Setup Guide" />
-                  <SetupGuide steps={analysis.setupSteps} />
+                  <div className="flex-1 min-h-0">
+                    <SetupGuide steps={analysis.setupSteps} />
+                  </div>
                 </div>
               )}
             </div>
