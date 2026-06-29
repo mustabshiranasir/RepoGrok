@@ -36,7 +36,7 @@ ${fileContents || "(none)"}
 
 Respond with this exact JSON structure (no trailing commas):
 {
-  "summary": "a detailed 4-6 sentence overview covering what the project does, its key features, architecture style, and target audience",
+  "summary": "a thorough 8-12 sentence overview covering: what the project does, its key features and functionality, architecture style, tech stack rationale, target audience, project structure, and any notable patterns or trade-offs",
   "purpose": "one-line purpose statement",
   "techStack": [
     { "name": "Technology name", "category": "frontend|backend|database|devops|testing", "icon": "simple-icon-identifier" }
