@@ -2,23 +2,15 @@
 
 import type { RatingItem } from "@/types/analysis";
 
-const maroon = "#b84d4d";
-const maroonDark = "#8a3030";
-const maroonLight = "#d47a7a";
-
 const categoryColors: Record<string, string> = {
-  "Code Quality": maroon,
-  Architecture: maroonLight,
-  Performance: maroon,
-  "Error Handling": maroonDark,
-  Documentation: maroonLight,
-  Testing: maroon,
-  Security: maroonDark,
+  "Code Quality": "var(--accent)",
+  Architecture: "var(--accent)",
+  Performance: "var(--accent)",
+  "Error Handling": "var(--accent)",
+  Documentation: "var(--accent)",
+  Testing: "var(--accent)",
+  Security: "var(--accent)",
 };
-
-function getScoreColor(_score: number, _max: number): string {
-  return maroon;
-}
 
 export default function RatingCard({ ratings }: { ratings: RatingItem[] }) {
   if (!ratings || ratings.length === 0) return null;
@@ -34,7 +26,7 @@ export default function RatingCard({ ratings }: { ratings: RatingItem[] }) {
         </h2>
         <span
           className="text-lg font-bold font-mono"
-          style={{ color: maroon }}
+          style={{ color: "var(--accent)" }}
         >
           {overall.toFixed(1)}
           <span className="text-[11px] text-[var(--text-muted)] font-normal">
@@ -45,7 +37,6 @@ export default function RatingCard({ ratings }: { ratings: RatingItem[] }) {
       <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
         {ratings.map((r) => {
           const pct = (r.score / r.maxScore) * 100;
-          const color = categoryColors[r.category] ?? maroon;
 
           return (
             <div key={r.category} className="space-y-1">
@@ -55,7 +46,7 @@ export default function RatingCard({ ratings }: { ratings: RatingItem[] }) {
                 </span>
                 <span
                   className="font-mono font-semibold"
-                  style={{ color: maroon }}
+                  style={{ color: "var(--accent)" }}
                 >
                   {r.score}/{r.maxScore}
                 </span>
@@ -65,7 +56,7 @@ export default function RatingCard({ ratings }: { ratings: RatingItem[] }) {
                   className="h-full rounded-full transition-all duration-500"
                   style={{
                     width: `${pct}%`,
-                    background: color,
+                    background: "var(--accent)",
                   }}
                 />
               </div>

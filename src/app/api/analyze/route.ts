@@ -60,6 +60,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const repoUrl: string = body?.repoUrl;
+    const force: boolean = body?.force === true;
 
     if (!repoUrl || typeof repoUrl !== "string") {
       return NextResponse.json(
@@ -107,7 +108,7 @@ export async function POST(request: Request) {
       throw err;
     }
 
-    if (existing) {
+    if (existing && !force) {
       const age = Date.now() - new Date(existing.createdAt).getTime();
       const isFresh = age < 24 * 60 * 60 * 1000;
       const shaMatch = existing.lastCommitSha === metadata.lastCommitSha;

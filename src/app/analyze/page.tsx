@@ -37,6 +37,33 @@ function AnalyzeContent() {
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [rawFileTree, setRawFileTree] = useState<{ path: string; type: string }[] | null>(null);
   const [repoName, setRepoName] = useState("");
+  const [isCached, setIsCached] = useState(false);
+
+  const fetchAnalysis = (force = false) => {
+    setLoading(true);
+    setError(null);
+
+    fetch("/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ repoUrl, force }),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to analyze repository");
+        return data;
+      })
+      .then((data) => {
+        setAnalysis(data.analysis);
+        setRawFileTree(data.rawFileTree ?? null);
+        setIsCached(data.cached === true);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
     if (!repoUrl) {
@@ -50,25 +77,7 @@ function AnalyzeContent() {
       repoUrl;
     setRepoName(short);
 
-    fetch("/api/analyze", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ repoUrl }),
-    })
-      .then(async (res) => {
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Failed to analyze repository");
-        return data;
-      })
-      .then((data) => {
-        setAnalysis(data.analysis);
-        setRawFileTree(data.rawFileTree ?? null);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
+    fetchAnalysis();
   }, [repoUrl]);
 
   if (!repoUrl) {
@@ -132,6 +141,19 @@ function AnalyzeContent() {
 
       {analysis && !loading && (
         <div className="space-y-8">
+          {isCached && (
+            <div className="flex items-center justify-between px-5 py-3 bg-accent/10 border border-accent/30 rounded-xl text-sm">
+              <span className="text-[var(--text-secondary)]">
+                Showing cached results. Re-analyze to get refreshed data including ratings.
+              </span>
+              <button
+                onClick={() => fetchAnalysis(true)}
+                className="px-4 py-1.5 rounded-lg bg-accent text-white text-xs font-semibold hover:opacity-90 transition-opacity"
+              >
+                Re-analyze
+              </button>
+            </div>
+          )}
           <div>
             <SectionLabel label="Summary" />
             <SummaryCard analysis={analysis} repoName={repoName} />
