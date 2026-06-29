@@ -28,6 +28,14 @@ export async function getRepoMetadata(
   };
 }
 
+const EXCLUDED_DIRS = [
+  "node_modules", ".git", ".next", "dist", "build", ".cache", "__pycache__",
+  "target", "vendor", ".venv", "env", ".env", "coverage", ".nyc_output",
+  ".turbo", ".swc", ".eslintcache", "next-env.d.ts",
+];
+
+const MAX_TREE_ITEMS = 800;
+
 export async function getFileTree(
   owner: string,
   repo: string,
@@ -47,9 +55,25 @@ export async function getFileTree(
     recursive: "1",
   });
 
-  return (data.tree as FileTreeItem[]).filter(
+  let items = (data.tree as FileTreeItem[]).filter(
     (item): item is FileTreeItem => item.path !== undefined
   );
+
+  items = items.filter((item) => {
+    const parts = item.path.split("/");
+    return !parts.some((part) => EXCLUDED_DIRS.includes(part));
+  });
+
+  items = items.filter((item) => {
+    const depth = item.path.split("/").length;
+    return depth <= 4;
+  });
+
+  if (items.length > MAX_TREE_ITEMS) {
+    items = items.slice(0, MAX_TREE_ITEMS);
+  }
+
+  return items;
 }
 
 export async function getFileContent(

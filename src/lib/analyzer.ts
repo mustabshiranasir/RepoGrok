@@ -9,11 +9,19 @@ function getClient(): Groq {
   return new Groq({ apiKey: key });
 }
 
+const MAX_TREE_LINES = 300;
+
 function buildPrompt(data: RepoDataInput): string {
-  const treeSummary = data.fileTree
+  let treeLines = data.fileTree
     .filter((f) => f.type === "blob")
-    .map((f) => f.path)
-    .join("\n");
+    .map((f) => f.path);
+
+  if (treeLines.length > MAX_TREE_LINES) {
+    treeLines = treeLines.slice(0, MAX_TREE_LINES);
+    treeLines.push(`... and ${data.fileTree.filter(f => f.type === "blob").length - MAX_TREE_LINES} more files`);
+  }
+
+  const treeSummary = treeLines.join("\n");
 
   const fileContents = Object.entries(data.files)
     .filter(([_, content]) => content !== null)

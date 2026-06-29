@@ -190,9 +190,30 @@ export async function POST(request: Request) {
       ...reconstructAnalysis(updated),
     });
   } catch (err: unknown) {
-    const message =
-      err instanceof Error ? err.message : "An unexpected error occurred";
+    const message = err instanceof Error ? err.message : "An unexpected error occurred";
     console.error("Analyze route error:", err);
+
+    if (message.includes("rate limit") || message.includes("403")) {
+      return NextResponse.json(
+        { error: "GitHub API rate limit exceeded. Add a GITHUB_TOKEN or try again later." },
+        { status: 429 }
+      );
+    }
+
+    if (message.includes("Request timed out") || message.includes("timeout") || message.includes("ETIMEDOUT")) {
+      return NextResponse.json(
+        { error: "Request timed out. This repo may be too large. Try a smaller repository." },
+        { status: 504 }
+      );
+    }
+
+    if (message.includes("context length") || message.includes("maximum context") || message.includes("token limit")) {
+      return NextResponse.json(
+        { error: "This repository is too large for the AI to analyze in one pass. Try a smaller repo or one with fewer files." },
+        { status: 413 }
+      );
+    }
+
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
