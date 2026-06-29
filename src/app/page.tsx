@@ -60,7 +60,7 @@ export default function Home() {
               placeholder="https://github.com/owner/repo"
               className="flex-1 bg-transparent px-4 py-3.5 text-[#f4f4f5] placeholder-[#71717a] text-sm outline-none"
             />
-            <button className="flex items-center gap-1.5 mr-1.5 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-medium rounded-md transition-colors whitespace-nowrap">
+            <button className="flex items-center gap-1.5 mr-1.5 px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] text-[#e4e4e7] text-sm font-medium rounded-md hover:bg-[#222222] hover:border-indigo-500/30 hover:text-[#f4f4f5] transition-all whitespace-nowrap">
               Analyze
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
