@@ -3,7 +3,10 @@ import Link from "next/link";
 export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-[60px] bg-[#0a0a0a] border-b border-[#1e1e1e] flex items-center px-6">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2.5">
+        <span className="text-[#f4f4f5] font-mono text-sm leading-none tracking-tight pr-2 border-r border-[#1e1e1e] mr-2">
+          &lt;&gt;
+        </span>
         <span className="text-[#f4f4f5] text-lg font-semibold tracking-tight">
           RepoGrok
         </span>
